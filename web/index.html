@@ -1,0 +1,117 @@
+<html>
+	<head>
+		<script src="/assets/js/Chart.min.js"></script>
+		<script src="/assets/js/jquery-1.12.0.min.js"></script> 
+	</head>
+	<body>
+		<p id="last"></p>
+
+		<h4>Last Day</h4>
+		<div style="width: 100%;">
+			<canvas id="last24h"></canvas>
+		</div>
+
+		<h4>Last Week</h4>
+		<div style="width: 100%;">
+			<canvas id="last7d"></canvas>
+		</div>
+
+		<h4>Last Month</h4>
+		<div style="width: 100%;">
+			<canvas id="last1m"></canvas>
+		</div>
+
+		<h4>All time</h4>
+		<div style="width: 100%;">
+			<canvas id="alltime"></canvas>
+		</div>
+
+		<script>
+
+			function lastValues(id, url) {
+				var jsonData = $.ajax({
+					url: url,
+					type: 'GET',
+					dataType: 'json',
+				}).done(function (results) {
+					var elmt = document.getElementById(id)
+					elmt.innerHTML = results['timestamp'] + "  " +
+						results['btc'] + " BTC / "  + 
+						results['usd'] + " USD" ;
+				});
+			} // end of lastValues()
+
+			function drawLineChart(canvasID, url) {
+				var jsonData = $.ajax({
+					url: url,
+					type: 'GET',
+					dataType: 'json',
+				}).done(function (results) {
+					// BTC
+					results['datasets'][0]['borderColor'] = "rgba(3, 88,106, 0.7)";
+					results['datasets'][0]['backgroundColor'] = "rgba(3, 88, 106, 0.3)";
+					results['datasets'][0]['pointBackgroundColor'] = "rgba(3, 88, 106, 0.3)";
+					results['datasets'][0]['pointHoverBorderColor'] = "rgba(22,22,22,1)";
+					results['datasets'][0]['pointBorderWidth'] = 3;
+					results['datasets'][0]['borderWidth'] = 3;
+					//USD
+					results['datasets'][1]['borderColor'] = "rgba(38, 185, 154, 0.7)";
+					results['datasets'][1]['backgroundColor'] = "rgba(38, 185, 154, 0.3)";
+					results['datasets'][1]['pointBorderWidth'] = 3;
+					results['datasets'][1]['borderWidth'] = 3;
+
+					// Get the context of the canvas element we want to select
+					var ctx = document.getElementById(canvasID).getContext("2d");
+
+					Chart.defaults.global.elements.point.radius = 1;
+					// Instantiate a new chart
+					var myLineChart = new Chart(ctx, {
+						type: 'line',
+						data: results,
+						options: {
+							elements: {
+								line: {
+									tension: 0, // disables bezier curves
+								}
+							},
+							showLines: true,
+							scales: {
+								yAxes: [{
+									id: 'BTC',
+									type: 'linear',
+									position: 'left',
+									//ticks: {
+									//	beginAtZero: true
+									//},	
+									scaleLabel: {
+										display: true,
+										labelString: 'BTC'
+									}
+								}, {
+									id: 'USD',
+									type: 'linear',
+									position: 'right',
+									//ticks: {
+									//	beginAtZero: true
+									//},	
+									scaleLabel: {
+										display: true,
+										labelString: 'USD ($)'
+									}
+								}]
+							}
+						} 
+					});
+
+				});
+			} // end of drawLineChart()
+
+			lastValues('last', 'http://127.0.0.1:5000/last/')
+			drawLineChart( 'last24h', 'http://127.0.0.1:5000/24h/');
+			drawLineChart( 'last7d' , 'http://127.0.0.1:5000/7d/' );
+			drawLineChart( 'last1m' , 'http://127.0.0.1:5000/1m/' );
+			drawLineChart( 'alltime', 'http://127.0.0.1:5000/all/');
+
+		</script>
+	</body>
+</html>
