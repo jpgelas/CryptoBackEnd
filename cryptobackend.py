@@ -17,14 +17,15 @@
 from flask import Flask, jsonify
 import os
 import utils
+import settings
 
-DATALOG_FILENAME = 'PATH_TO/LOG_FILE.LOG' 
+DATALOG_FILENAME = settings.DATALOG_FILENAME
 
 app = Flask(__name__)
-app.debug = False
+app.debug = settings.FLASK_DEBUG
 
 USAGE_STRING = "Usage : /[24h|7d|1m|all|last|contact]"
-EMAIL_CONTACT = "name@domain.tld"
+EMAIL_CONTACT = settings.EMAIL_CONTACT
 
 @app.route("/cryptoback/")
 def page_index():
@@ -68,8 +69,10 @@ def send_24h_data():
         'yAxisID': 'USD',
         'data': dataUSD,
         }
+    data['min'] = min(dataUSD)
+    data['max'] = max(dataUSD)
+    data['percent'] = (dataUSD[-1] * 100 / dataUSD[0]) - 100
     data['datasets'] = [ dicBTC, dicUSD ] 
-    #return jsonify(utils.data_test)
     return jsonify(data)
 
 @app.route("/cryptoback/7/")
@@ -97,6 +100,9 @@ def send_7d_data():
         'yAxisID': 'USD',
         'data': dataUSD
         }
+    data['min'] = min(dataUSD)
+    data['max'] = max(dataUSD)
+    data['percent'] = (dataUSD[-1] * 100 / dataUSD[0]) - 100
     data['datasets'] = [ dicBTC, dicUSD ] 
     return jsonify(data)
 
@@ -125,6 +131,9 @@ def send_1m_data():
         'yAxisID': 'USD',
         'data': dataUSD
         }
+    data['min'] = min(dataUSD)
+    data['max'] = max(dataUSD)
+    data['percent'] = (dataUSD[-1] * 100 / dataUSD[0]) - 100
     data['datasets'] = [ dicBTC, dicUSD ] 
     return jsonify(data)
 
@@ -150,6 +159,9 @@ def send_all_data():
         'yAxisID': 'USD',
         'data': dataUSD
         }
+    data['min'] = min(dataUSD)
+    data['max'] = max(dataUSD)
+    data['percent'] = (dataUSD[-1] * 100 / dataUSD[0]) - 100
     data['datasets'] = [ dicBTC, dicUSD ] 
     return jsonify(data)
 

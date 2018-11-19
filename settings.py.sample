@@ -1,0 +1,4 @@
+DATALOG_FILENAME = '/path_to/your/file.log'
+EMAIL_CONTACT = 'name@domain.tld'
+FLASK_DEBUG = True
+
